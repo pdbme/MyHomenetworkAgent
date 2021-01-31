@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using JsonException = System.Text.Json.JsonException;
 
-namespace WorkerServiceTest
+namespace MyHomenetworkAgent
 {
     public class RemoteCommandActions
     {

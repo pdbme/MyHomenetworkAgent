@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace WorkerServiceTest
+namespace MyHomenetworkAgent
 {
     public class RemoteCommandProcessor : IRemoteCommandProcessor
     {
@@ -35,33 +35,31 @@ namespace WorkerServiceTest
         {
             List<RemoteCommand> commands = GetJson<List<RemoteCommand>>(configOptions.BaseUrl +
                                    $"getqueue?apikey={configOptions.ApiKey}").Result;
-            if (commands.Any())
+            if (commands == null || !commands.Any()) return;
+            foreach (var command in commands)
             {
-                foreach (var command in commands)
+                logger.LogInformation("Result: {command} Arguments: {argLength}", command.Command, command.Arguments.Count);
+
+                RemoteCommandActions actions = new RemoteCommandActions(logger, config);
+                var actionsType = actions.GetType();
+                var theMethod = actionsType.GetMethod(command.Command);
+
+                // ReSharper disable once CoVariantArrayConversion
+                object[] myobj = command.Arguments.ToArray();
+                if (theMethod != null)
                 {
-                    logger.LogInformation("Result: {command} Arguments: {argLength}", command.Command, command.Arguments.Count);
-
-                    RemoteCommandActions actions = new RemoteCommandActions(logger, config);
-                    var actionsType = actions.GetType();
-                    var theMethod = actionsType.GetMethod(command.Command);
-
-                    // ReSharper disable once CoVariantArrayConversion
-                    object[] myobj = command.Arguments.ToArray();
-                    if (theMethod != null)
+                    try
                     {
-                        try
-                        {
-                            theMethod.Invoke(actions, myobj);
-                        }
-                        catch (Exception ex)
-                        {
-                            logger.LogError(ex, "Invoke of method {command} failed - arguments may not match.", command.Command);
-                        }
+                        theMethod.Invoke(actions, myobj);
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        logger.LogError("Invoke of unkown method {command} failed", command.Command);
+                        logger.LogError(ex, "Invoke of method {command} failed - arguments may not match.", command.Command);
                     }
+                }
+                else
+                {
+                    logger.LogError("Invoke of unkown method {command} failed", command.Command);
                 }
             }
         }

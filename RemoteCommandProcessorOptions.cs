@@ -1,4 +1,4 @@
-﻿namespace WorkerServiceTest
+﻿namespace MyHomenetworkAgent
 {
     public class RemoteCommandProcessorOptions
     {

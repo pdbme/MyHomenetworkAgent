@@ -1,21 +1,23 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 using Serilog;
-using Serilog.Events;
 
-namespace WorkerServiceTest
+namespace MyHomenetworkAgent
 {
     public class Program
     {
         public static void Main(string[] args)
         {
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", false, true)
+                .Build();
+
             Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
-                .Enrich.FromLogContext()
-                .WriteTo.File("worker.log")
-                .WriteTo.Console()
+                .ReadFrom.Configuration(configuration)
                 .CreateLogger();
 
             try
@@ -39,7 +41,6 @@ namespace WorkerServiceTest
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddTransient<IRemoteCommandProcessor, RemoteCommandProcessor>();
-                    //services.AddTransient<IRemoteCommandActions, RemoteCommandActions>();
                     services.AddHostedService<Worker>();
                 }).UseSerilog();
     }
