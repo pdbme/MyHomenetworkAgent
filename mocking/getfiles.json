@@ -1,0 +1,12 @@
+﻿{
+  "getqueue": [
+    {
+      "Command": "GetFiles",
+      "Arguments": [ "1000003", "C:\\temp\\logs", "*.*" ]
+    },
+    {
+      "Command": "GetUrl",
+      "Arguments": [ "1000004", "http://192.168.178.20:8080/sabnzbd/api?mode=history&output=json&apikey=cfe4ec2c4a804ca4af7805cb3027bc98" ]
+    }
+  ]
+}

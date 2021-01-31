@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "MyHomenetworkAgent": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
